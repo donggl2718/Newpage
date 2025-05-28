@@ -1,0 +1,389 @@
+/* style.css */
+
+/* 기본 스타일 */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+header {
+    background-color: #4CAF50; /* 초록색 헤더 */
+    color: white;
+    padding: 1rem 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+header p {
+    font-size: 1.1rem;
+}
+
+/* Main 레이아웃: Flexbox를 사용하여 좌우 분할 */
+main {
+    display: flex; /* Flexbox 활성화 */
+    padding: 20px;
+    width: 90%; /* 전체 너비 설정 */
+    margin: 20px auto; /* 중앙 정렬 */
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    min-height: 70vh; /* 최소 높이 설정 (상세 패널이 길어져도 스크롤 생기도록) */
+    position: relative; /* 자식 요소의 absolute positioning을 위한 기준점 */
+}
+
+/* 왼쪽 과목 목록 컨테이너 */
+.course-container {
+    flex: 1; /* 초기에는 남은 공간 모두 차지 */
+    min-width: 0; /* flex 아이템 내부 스크롤을 위한 설정 */
+    overflow-y: auto; /* 내용이 넘치면 스크롤 */
+    padding-right: 20px; /* 상세 패널과의 간격 */
+    transition: flex 0.5s ease-out, opacity 0.5s ease-out; /* 패널 열릴 때 너비 조정 애니메이션 */
+    display: flex; /* 내부 콘텐츠(필터, 목록)를 위한 flex */
+    flex-direction: column; /* 세로 방향 정렬 */
+}
+
+/* 상세 정보 패널 (오른쪽) */
+.detail-panel {
+    flex: 0 0 0; /* 초기 너비 0 (컨텐츠가 보이지 않도록) */
+    min-width: 0; /* flex 아이템의 최소 너비 설정 */
+    padding: 0; /* 활성화되지 않았을 때 패딩 0 유지 */
+    border-left: none; /* 초기 보더 없음 */
+    background-color: #fafafa; /* 패널 배경색 */
+    border-radius: 0 8px 8px 0; /* 오른쪽 모서리 둥글게 */
+    box-shadow: none; /* 초기 그림자 없음 */
+    overflow: hidden; /* 내부 스크롤을 detail-image-viewer가 담당하도록 */
+    display: flex; /* 내부 컨텐츠(이미지 뷰어)를 위한 flex */
+    flex-direction: column; /* 세로 방향 정렬 */
+    align-items: center; /* 이미지 뷰어 중앙 정렬 */
+    justify-content: center; /* 이미지 뷰어 중앙 정렬 */
+    transition: flex 0.5s ease-out, padding 0.5s ease-out, border-left 0.5s ease-out, box-shadow 0.5s ease-out;
+}
+
+/* 상세 정보 패널이 활성화될 때 (JavaScript에서 main.detail-active 클래스 추가) */
+main.detail-active .course-container {
+    flex: 0.5; /* 과목 목록이 절반으로 줄어듦 */
+    /* opacity: 0.7; (기존) 이제 필터가 사라지므로 필요 없음 */
+    /* pointer-events: none; (기존) 이제 필터가 사라지므로 필요 없음 */
+}
+
+main.detail-active .detail-panel {
+    flex: 0.5; /* 상세 패널이 절반 너비를 차지 */
+    padding: 20px; /* 패널 활성화 시 패딩 적용 */
+    border-left: 1px solid #ddd; /* 구분선 추가 */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* 그림자 추가 */
+}
+
+/* 상세 패널 닫기 버튼 */
+.close-detail-panel {
+    position: absolute; /* main을 기준으로 위치 지정 */
+    top: 20px;
+    right: 20px;
+    background: #ccc;
+    color: #333;
+    border: none;
+    border-radius: 50%; /* 원형 버튼 */
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    line-height: 1; /* 텍스트 중앙 정렬 */
+    cursor: pointer;
+    z-index: 10; /* 다른 요소 위에 표시 */
+    display: none; /* 초기에는 숨김 */
+}
+
+main.detail-active .close-detail-panel {
+    display: block; /* 활성화 시 표시 */
+}
+
+/* 상세 이미지 뷰어 */
+.detail-image-viewer {
+    width: 100%; /* detail-panel 너비에 맞게 */
+    height: 100%; /* detail-panel 높이에 맞게 */
+    display: flex; /* 이미지를 중앙에 정렬하기 위해 flex 사용 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    /* 세로 정렬을 위쪽으로 변경 */
+    align-items: flex-start; /* 기존: center; */
+    overflow: auto; /* 이미지 스크롤 허용 */
+    background-color: #e9e9e9; /* 이미지 뷰어 배경색 */
+    border-radius: 8px; /* 뷰어 모서리 둥글게 */
+}
+
+#detailImage {
+    max-width: 100%; /* 뷰어 너비를 넘지 않도록 */
+    max-height: 100%; /* 뷰어 높이를 넘지 않도록 */
+    object-fit: contain; /* 이미지 비율 유지하며 컨테이너에 맞춤 */
+    display: block;
+    transition: transform 0.1s ease-out; /* 확대/축소 애니메이션 */
+    cursor: grab; /* 드래그 가능함을 나타내는 커서 */
+    min-width: 1px; /* 이미지 로드 전 레이아웃 깨짐 방지 */
+    min-height: 1px;
+}
+
+/* --- 필터 컨트롤 --- */
+.filter-controls {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #fafafa;
+    /* 필터 숨김을 위한 transition 추가: display 속성에 transition은 불가능하므로, 다른 속성들이 먼저 애니메이션된 후 display: none;이 적용되도록 합니다. */
+    transition: opacity 0.5s ease-out, max-height 0.5s ease-out, margin-bottom 0.5s ease-out, padding 0.5s ease-out, border 0.5s ease-out;
+    overflow: hidden; /* 높이가 0이 될 때 내용이 잘리도록 */
+    flex-shrink: 0;
+}
+
+/* 상세 패널이 활성화될 때 필터 컨트롤 숨기기 */
+main.detail-active .filter-controls {
+    opacity: 0; /* 투명하게 만듦 */
+    max-height: 0; /* 높이를 0으로 만들어 숨김 */
+    margin-bottom: 0; /* 마진도 없앰 */
+    padding: 0; /* 모든 패딩 없애기 */
+    border: none; /* 테두리 없앰 */
+    pointer-events: none; /* 필터 버튼 클릭 방지 */
+    /* 핵심 변경: 애니메이션이 완료된 후 요소를 완전히 제거합니다. */
+    display: none; /* 요소를 렌더링 트리에서 즉시 제거 */
+    transition-delay: 0.5s; /* opacity, max-height 애니메이션이 끝난 후 display: none;이 적용되도록 지연 */
+}
+
+
+.filter-group {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.filter-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.filter-group h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+main.detail-active .filter-group {
+    opacity: 0; /* 투명하게 만듦 */
+    max-height: 0; /* 높이를 0으로 만들어 숨김 */
+    margin-bottom: 0; /* 마진도 없앰 */
+    padding: 0; /* 모든 패딩 없애기 */
+    border: none; /* 테두리 없앰 */
+    pointer-events: none; /* 필터 버튼 클릭 방지 */
+    /* 핵심 변경: 애니메이션이 완료된 후 요소를 완전히 제거합니다. */
+    display: none; /* 요소를 렌더링 트리에서 즉시 제거 */
+    transition-delay: 0.5s; /* opacity, max-height 애니메이션이 끝난 후 display: none;이 적용되도록 지연 */
+}
+
+.filter-btn {
+    background-color: #e0e0e0;
+    border: none;
+    padding: 8px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: #d0d0d0;
+}
+
+.filter-btn.active {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+}
+
+/* --- 과목 카드 목록 --- */
+.course-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    flex-grow: 1; /* 남은 공간을 모두 차지하도록 설정 */
+    overflow-y: auto; /* 목록 자체에 스크롤 적용 */
+}
+
+.course-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+    padding-bottom: 20px;
+    opacity: 1;
+    max-height: 500px; /* 초기 높이 설정 (hidden 전환을 위해) */
+    margin-bottom: 25px;
+    transition: opacity 0.4s ease-out, max-height 0.4s ease-out, margin 0.4s ease-out, padding 0.4s ease-out;
+    cursor: pointer; /* 마우스 오버 시 손가락 모양으로 변경 */
+}
+
+.course-card.hidden {
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border: none;
+    pointer-events: none; /* 클릭 이벤트 방지 */
+}
+
+.course-card.display-none {
+    display: none; /* 완전히 사라지도록 */
+}
+
+.course-card:hover {
+    transform: translateY(-5px); /* 호버 시 약간 위로 이동 */
+}
+
+/* 선택된 카드 강조 (선택 사항) */
+.course-card.selected {
+    border: 2px solid #4CAF50; /* 클릭된 카드에 강조 테두리 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.course-card .course-icon {
+    width: 100%;
+    height: 180px; /* 과목 카드 이미지 대신 사용할 높이 */
+    background-color: #81c784; /* 모든 과목에 적용될 기본 단색 배경색 (연한 초록색) */
+    display: block;
+    margin-bottom: 15px;
+    border-radius: 8px 8px 0 0; /* 카드 상단 모서리에 둥근 테두리 적용 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem; /* 아이콘/텍스트 크기 예시 */
+    color: white; /* 아이콘/텍스트 색상 예시 */
+}
+
+.course-card h3 {
+    color: #333;
+    font-size: 1.7rem;
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding: 0 15px;
+}
+
+.course-card p {
+    font-size: 1rem;
+    color: #555;
+    padding: 0 15px;
+    max-height: 120px; /* 설명이 길면 스크롤되도록 */
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.course-card .tags {
+    margin-top: 15px;
+    padding: 0 15px;
+}
+
+.course-card .tag {
+    display: inline-block;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin: 3px;
+}
+
+/* --- 푸터 --- */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+    margin-top: 30px;
+}
+
+/* --- 반응형 디자인 --- */
+@media (max-width: 1024px) { /* 태블릿 가로 / 데스크탑 작은 화면 */
+    main.detail-active .course-container {
+        flex: 1; /* 작은 화면에서는 상세 패널 열려도 카드 목록이 100% 차지 */
+        opacity: 1;
+        pointer-events: auto;
+    }
+    /* 상세 패널이 전체 화면을 덮는 모달처럼 작동 */
+    main.detail-active .detail-panel {
+        position: fixed; /* 화면에 고정 */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 999; /* 다른 요소 위에 오도록 */
+        padding: 20px;
+        border-left: none; /* 좌측 보더 제거 */
+        border-radius: 0; /* 라운딩 제거 */
+        background-color: rgba(255,255,255,0.95); /* 배경 반투명 */
+        box-shadow: none; /* 그림자 제거 */
+        display: flex; /* 내부 이미지를 중앙에 두기 위해 필요 */
+        flex-direction: column;
+        justify-content: center; /* 이미지를 중앙에 정렬 */
+        align-items: center; /* 이미지를 중앙에 정렬 */
+    }
+    main.detail-active .close-detail-panel {
+        position: fixed; /* 고정된 패널에 맞춤 */
+        top: 20px;
+        right: 20px;
+        z-index: 1000; /* 가장 위에 오도록 */
+    }
+    /* 상세 패널이 활성화되지 않았을 때는 숨김 */
+    .detail-panel {
+        display: none;
+    }
+    /* 상세 패널이 활성화될 때 표시 */
+    main.detail-active .detail-panel {
+        display: flex;
+    }
+}
+
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    header p {
+        font-size: 1rem;
+    }
+
+    .filter-group h3 {
+        font-size: 1.1rem;
+    }
+    .filter-btn {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+    .course-card .course-icon {
+        height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding: 15px;
+        margin: 15px auto;
+    }
+    
+    .course-card h3 {
+        font-size: 1.5rem;
+    }
+
+    .course-card p {
+        font-size: 0.9rem;
+    }
+}
